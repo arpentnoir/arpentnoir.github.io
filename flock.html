@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+<script type="text/javascript" src="victor.js"></script>
 <script type="text/javascript">
 
 function animate(){
@@ -9,10 +10,21 @@ function animate(){
   ctx.canvas.width = window.innerWidth;
   ctx.canvas.height = window.innerHeight;
   radius = 2;
-  direction = Math.random() * Math.PI * 2;
   boids = [];
-  for(i = 0; i < 1000; i++){
-    var b = new Boid(Math.random() * canvas.width, Math.random() * canvas.height, radius, direction);
+  number = 100;
+  
+  separationDist = 60;
+  alignmentDist = 100;
+  cohesionDist = 100;
+
+  coherenceScale = 0.005;
+  separationScale = 0.0001;
+  alignmentScale = 0.1;
+
+  for(i = 0; i < number; i++){
+    var velocity = new Victor(Math.random() * 2 - 1, Math.random() * 2 - 1);
+    var pos = new Victor(Math.random() * ctx.canvas.width, Math.random() * ctx.canvas.height);
+    var b = new Boid(pos, radius, velocity);
     boids[i] = b;
 }
   setInterval(drawShape, 10);
@@ -24,20 +36,77 @@ function drawShape(){
   // Make sure we don't execute when canvas isn't supported
   if (canvas.getContext){
     ctx = canvas.getContext('2d');
-  ctx.canvas.width = window.innerWidth;
-  ctx.canvas.height = window.innerHeight;
+    ctx.canvas.width = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;
   
     // use getContext to use the canvas for drawing
     
-    for(i = 0; i < 1000; i++){
+    for(i = 0; i < number; i++){
       var b = boids[i];
-      b.x_pos = b.x_pos + Math.cos(b.direction)
-      b.y_pos = b.y_pos + Math.sin(b.direction)
-      b.direction = b.direction + Math.random() - 0.5;
+      b.acc = new Victor(0, 0);
+
+      if (b.pos.x > ctx.canvas.width){
+        b.pos.x = b.pos.x % ctx.canvas.width;
+      } else if (b.pos.x < 0){
+        b.pos.x = ctx.canvas.width + b.pos.x;
+      }
+      if (b.pos.y > ctx.canvas.height){
+        b.pos.y = b.pos.y % ctx.canvas.height;
+      } else if (b.pos.y < 0){
+        b.pos.y = ctx.canvas.height + b.pos.y;
+      }
+      var av = new Victor(0, 0);
+      var ave = new Victor(0, 0);
+      var count = 0
+      for(j = 0; j < number; j++){
+        var B = boids[j];
+        //Separation
+        var dis = b.pos.distance(B.pos);
+        
+         if(dis < separationDist & b != B){
+            //console.log("getting a bit close there chirpy..." +  " " + b.velocity);
+            var p = new Victor(b.pos.x, b.pos.y);
+            p.subtract(B.pos);
+            var sc = separationScale * (separationDist - dis/separationDist);
+            var scv = new Victor(sc, sc);
+            p.multiply(scv);
+            //console.log(p);
+            av.add(p);
+          } 
+
+        //Cohesion
+
+        if(dis < alignmentDist & b != B){
+          ave.add(B.pos);
+          count++;
+        }
+
+        //Alignment
+
+
+      }
+      //Separation
+      b.acc.add(av);
+
+
+      //Cohesion
+      ave.divide(count);
+      pc = new Victor(ave.x, ave.y);
+      pc.subtract(b.pos);
+      pc.normalize();
+      var cs = new Victor(coherenceScale, coherenceScale);
+      pc.multiply(cs);
+      b.acc.add(pc);
+      //console.log(b.velocity);
+
+      //Movement
+      b.velocity.add(b.acc);
+      b.velocity.limit(2, 0.8);
+      b.pos.add(b.velocity);
       // Draw shapes
       ctx.beginPath();
-      ctx.arc(b.x_pos, b.y_pos, b.radius, 0, 2 * Math.PI, false);
-      ctx.fillStyle = 'green';
+      ctx.arc(b.pos.x, b.pos.y, b.radius, 0, 2 * Math.PI, false);
+      ctx.fillStyle = b.col;
       ctx.fill();
     }
 
@@ -46,11 +115,12 @@ function drawShape(){
   }
 }
 
-function Boid(x_pos, y_pos, radius, direction){
-  this.x_pos = x_pos;
-  this.y_pos = y_pos;
+function Boid(pos, radius, velocity){
+  this.pos = pos;
   this.radius = radius;
-  this.direction = direction;
+  this.velocity = velocity;
+  this.acc = new Victor();
+  this.col = 'green';
 }
 
 
