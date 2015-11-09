@@ -1,5 +1,5 @@
-import fullscreen.*;
-FullScreen fs;
+//import fullscreen.*;
+//FullScreen fs;
 int x, y, i;
 float xs, ys, a, d; 
 PImage img;
