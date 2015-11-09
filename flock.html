@@ -11,14 +11,14 @@ function animate(){
   ctx.canvas.height = window.innerHeight;
   radius = 2;
   boids = [];
-  number = 100;
-  
-  separationDist = 60;
+  number = 50;
+
+  separationDist = 20;
   alignmentDist = 100;
   cohesionDist = 100;
 
-  coherenceScale = 0.005;
-  separationScale = 0.0001;
+  coherenceScale = 0.5;
+  separationScale = 0.00001;
   alignmentScale = 0.1;
 
   for(i = 0; i < number; i++){
@@ -31,84 +31,22 @@ function animate(){
 }
 
 function drawShape(){
-  // Get the canvas element using the DOM
-  
-  // Make sure we don't execute when canvas isn't supported
+
   if (canvas.getContext){
     ctx = canvas.getContext('2d');
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
-  
-    // use getContext to use the canvas for drawing
-    
+
+
     for(i = 0; i < number; i++){
       var b = boids[i];
-      b.acc = new Victor(0, 0);
-
-      if (b.pos.x > ctx.canvas.width){
-        b.pos.x = b.pos.x % ctx.canvas.width;
-      } else if (b.pos.x < 0){
-        b.pos.x = ctx.canvas.width + b.pos.x;
+      b.avoid();
+      b.align();
+      b.cohere();
+      b.move();
+      b.adjustPosition();
+      b.draw();
       }
-      if (b.pos.y > ctx.canvas.height){
-        b.pos.y = b.pos.y % ctx.canvas.height;
-      } else if (b.pos.y < 0){
-        b.pos.y = ctx.canvas.height + b.pos.y;
-      }
-      var av = new Victor(0, 0);
-      var ave = new Victor(0, 0);
-      var count = 0
-      for(j = 0; j < number; j++){
-        var B = boids[j];
-        //Separation
-        var dis = b.pos.distance(B.pos);
-        
-         if(dis < separationDist & b != B){
-            //console.log("getting a bit close there chirpy..." +  " " + b.velocity);
-            var p = new Victor(b.pos.x, b.pos.y);
-            p.subtract(B.pos);
-            var sc = separationScale * (separationDist - dis/separationDist);
-            var scv = new Victor(sc, sc);
-            p.multiply(scv);
-            //console.log(p);
-            av.add(p);
-          } 
-
-        //Cohesion
-
-        if(dis < alignmentDist & b != B){
-          ave.add(B.pos);
-          count++;
-        }
-
-        //Alignment
-
-
-      }
-      //Separation
-      b.acc.add(av);
-
-
-      //Cohesion
-      ave.divide(count);
-      pc = new Victor(ave.x, ave.y);
-      pc.subtract(b.pos);
-      pc.normalize();
-      var cs = new Victor(coherenceScale, coherenceScale);
-      pc.multiply(cs);
-      b.acc.add(pc);
-      //console.log(b.velocity);
-
-      //Movement
-      b.velocity.add(b.acc);
-      b.velocity.limit(2, 0.8);
-      b.pos.add(b.velocity);
-      // Draw shapes
-      ctx.beginPath();
-      ctx.arc(b.pos.x, b.pos.y, b.radius, 0, 2 * Math.PI, false);
-      ctx.fillStyle = b.col;
-      ctx.fill();
-    }
 
   } else {
     alert('You need Safari or Firefox 1.5+ to see this demo.');
@@ -119,10 +57,95 @@ function Boid(pos, radius, velocity){
   this.pos = pos;
   this.radius = radius;
   this.velocity = velocity;
-  this.acc = new Victor();
-  this.col = 'green';
-}
+  this.acc = new Victor(0, 0);
+  this.col = 'blue';
 
+  this.cohere = function(){
+    var coh = new Victor(0, 0);
+    var count = 0;
+    for(j = 0; j < number; j++){
+      var B = boids[j];
+      var dis = this.pos.distance(B);
+        if(dis < cohesionDist & this != B){
+        coh.add(B.pos);
+        count++;
+        }
+    }
+    if(count > 0){
+      coh.divide(count);
+      var v = new Victor(coh.x, coh.y);
+      v.subtract(this.pos);
+      v.normalize();
+      v.multiply(coherenceScale, coherenceScale);
+      this.acc.add(v);
+    }
+  }
+  this.align = function(){
+    var aln = new Victor(0, 0);
+    var count = 0;
+    for(j = 0; j < number; j++){
+      var B = boids[j];
+      var dis = this.pos.distance(B);
+      if(dis < alignmentDist & this != B){
+        aln.add(B.velocity);
+        count++;
+      }
+    }
+    console.log(aln);
+    if(count > 0) {
+      aln.divide(count);
+      aln.normalize();
+      var v = new Victor(alignmentScale, alignmentScale);
+      aln.multiply(v);
+      this.acc.add(aln);
+    }
+  }
+
+  this.avoid = function(){
+    var av = new Victor(0, 0);
+    for(j = 0; j < number; j++){
+      var B = boids[j];
+      var dis = this.pos.distance(B.pos);
+      if(dis < separationDist & this != B){
+        var p = new Victor(this.pos.x, this.pos.y);
+        p.subtract(B.pos);
+        var sc = separationScale * (separationDist - dis/separationDist);
+        var scv = new Victor(sc, sc);
+        p.multiply(scv);
+        av.add(p);
+
+      }
+    }
+    this.acc.add(av);
+  }
+
+  this.move = function(){
+    this.velocity.add(this.acc);
+    this.velocity.limit(1, 0.5);
+    this.pos.add(this.velocity);
+  }
+
+  this.draw = function(){
+    ctx.beginPath();
+    ctx.arc(this.pos.x, this.pos.y, this.radius, 0, 2 * Math.PI, false);
+    ctx.fillStyle = this.col;
+    ctx.fill();
+  }
+
+  this.adjustPosition = function(){
+
+      if (this.pos.x > ctx.canvas.width){
+        this.pos.x = this.pos.x % ctx.canvas.width;
+      } else if (this.pos.x < 0){
+        this.pos.x = ctx.canvas.width + this.pos.x;
+      }
+      if (this.pos.y > ctx.canvas.height){
+        this.pos.y = this.pos.y % ctx.canvas.height;
+      } else if (this.pos.y < 0){
+        this.pos.y = ctx.canvas.height + this.pos.y;
+      }
+  }
+}
 
 </script>
 </head>

@@ -8,9 +8,9 @@ PImage img;
 
 void setup(){
   size(1280, 800);
-  background(0, 191, 255);
-  for(int i = 0; i < 500; i++){
-    D = new Dot(new PVector(random(width), random(height)), color(0), 2);
+  background(255, 255, 255);
+  for(int i = 0; i < 1000; i++){
+    D = new Dot(new PVector(random(width), random(height)), color(random(255), random(255), random(255)), 5);
     Dots.add(D);
   }
   //img = loadImage("sky.jpg");
@@ -23,7 +23,7 @@ void setup(){
 
 void draw(){
   //image(clouds, 0, 0, 1280, 800);
-    background(0, 191, 255);
+  background(255, 255, 255);
 
   for(int i = 0; i < Dots.size(); i++){
     Dot D = (Dot) Dots.get(i);

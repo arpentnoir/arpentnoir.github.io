@@ -1,0 +1,100 @@
+<html>
+<head>
+<title>Test Fractal Generator</title>
+</head>
+<body><center>
+<a href="http://www.pangloss.com/seidel/ClrHlpr/index.html">ColorHelper</a> | 
+<a href="http://www.pangloss.com/seidel/Shaker/">Insult Me</a> | 
+<a href="http://www.pangloss.com/seidel/Poem/">Zenith Poetry</a> | 
+<a href="http://www.pangloss.com/seidel/ClrHlpr/imagemap.html">ImageMapper</a> |
+<a href="http://zenith.berkeley.edu/~seidel/Converter/converter.html">Converter</a> | 
+<a href="http://www.he.net/~seidel/">Home</a>
+<p>
+<!--#exec cmd="./rand_pic.pl"-->
+<h1>Test Fractal Generator</h1></center>
+<a href="http://zenith.berkeley.edu/seidel/Frac/fracexp.html">How it works</a> 
+<!-- &nbsp;&nbsp;|
+&nbsp;&nbsp;&nbsp;<a href="http://vault-particle.berkeley.edu/FracMovie/frac1.gif">Fractal Movies (136k)</a>
+are easy to make. -->
+
+<p>
+Explore for interesting regions in the plane by entering some values (or using
+the defaults), and the computer will iterate them and generate a gif
+image. The origin (0,0) is a high activity area (as long as a, b are raised 
+above .35). <b>a</b> and <b>b</b> are the interesting 
+numbers to play with. For example, try varying a and b by 10%, or 
+compare the result of the defaults to these values (x, y) = (0.6, 0.58),
+(x_inc, y_inc) = (0.0015, 0.0015), (a, b) = (0.4, 0.389). 
+Or see the result <a href="http://www.pangloss.com/seidel/Frac/Gallery/testsm.gif">here</a>
+
+<form method="POST" action="http://www.pangloss.com/seidel/Frac/fgen.cgi">
+<p>
+<input type="text" name="x_start" value="0.2">
+Begining X-value (should be les than 2.0)
+<p>
+<input type="text" name="y_start" value="0.4">
+Begining Y-value (should be les than 2.0)
+<p>
+<input type="text" name="x_increment" value="0.001">
+Increment of X field<br>
+(should be small enough so that 200*X_increment is less than 2.0)
+<p>
+<input type="text" name="y_increment" value="0.001">
+Increment of Y field<br>
+(should be small enough so that 200*Y_increment is less than 2.0)
+<p>
+<input type="text" name="a_value" value="0.4">
+Value of <b>a</b>
+<p>
+<input type="text" name="b_value" value="0.32">
+Value of <b>b</b>
+
+<br>
+<select name="size">
+<option value="200x200">200x200
+<option value="300x300">300x300
+<option value="400x400">400x400
+<option value="600x600">600x600
+</select> Size of x, y field in pixels
+<p>
+<input type="submit" name="submit1" value="Crank it Up">
+<input type="reset" value="Reset Values">
+<p>Max number of iterations:
+<input type="radio" name="iterations" value="75" checked>75
+<input type="radio" name="iterations" value="150">150
+<input type="radio" name="iterations" value="300">300
+<p>
+<input type="checkbox" name="collaborate" unchecked> Collaborate with 
+<a href="http://204.96.11.210/jchuang/Music/Mozart/mozart.cgi">Mozart</a> (allows the option to submit your 
+data to the Mozart Collaborator) 
+</form>
+<p>
+<font size="+1">
+<img src="http://www.primenet.com/~seidel/images/new.gif">Configure your own
+<a href="http://www.pangloss.com/seidel/Frac/color_table.html">color choices.</a>
+<p>
+<a href="http://www.pangloss.com/seidel/Frac/mantest.html">Mandelbrot Fractals</a>
+</font>
+<p>
+Visit the <a href="http://www.pangloss.com/seidel/Frac/gal.cgi">User Gallery</a> 
+<p>
+The fractal generator as a <font size="+1"><a href="http://www.pangloss.com/seidel/Frac/J_Frac.html">Java applet</a>.</font>
+<br>
+<hr>
+<a href="http://www.pangloss.com/seidel/ClrHlpr/">HTML Color Helper</a> - a utility for finding the right colors 
+for your homepage.
+<p> 
+Try your hand at <a href="http://www.pangloss.com/seidel/Poem/">Electronic Poetry</a><p>
+<p>
+<a href="http://www.he.net/~seidel/ChitChat/">Chat Server</a> - Exchange 
+character strings with a friend via a web browser.
+<p>
+New! Play <a href="http://204.96.11.210/jchuang/Games/Ghost/home.cgi">Ghost</a> - a two player word game (see if 
+anyone is waiting to play) <p>
+Return to <a href="http://zenith.berkeley.edu/seidel/lab.html">lab page</a>
+<hr>
+Constructed and maintained by <a href="http://www.he.net/~seidel/">Chris Seidel</a>
+<p>Comments or suggestions: 
+<!--#exec cmd="/home/pangloss/public_html/spamram.pl seidel@pangloss.com"-->
+</body>
+</html>

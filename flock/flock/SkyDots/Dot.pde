@@ -6,15 +6,15 @@ class Dot{
   color c;
   int s;
   
-  float maxSpeed = 10.0;
+  float maxSpeed = 0.1;
   float avoidScale = 0.0001;
   float avoidDist = 40;
   float drag = 0.95;
   
-  float coherenceScale = 0.5;
+  float coherenceScale = 0.01;
   float coherenceDist = 100;
   
-  float alignmeVntScale = 0.1;
+  float alignmeVntScale = 0.01;
   float alignmentDist = 100;
 
   Dot(PVector _pos, color _c, int _s){
